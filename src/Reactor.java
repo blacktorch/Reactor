@@ -198,7 +198,7 @@ class Reactor implements SendCommand {
     // This function parses sensor information
     private void parseSensorInformation(String message) throws IOException {
         // First check kind of information
-        Matcher m = message_pattern.matcher(message);
+        Matcher m = messagePattern.matcher(message);
         if (!m.matches()) {
             throw new IOException(message);
         }
@@ -217,7 +217,7 @@ class Reactor implements SendCommand {
     private void parseHear(String message)
             throws IOException {
         // get hear information
-        Matcher m = hear_pattern.matcher(message);
+        Matcher m = hearPattern.matcher(message);
         int time;
         String sender;
         String uttered;
@@ -270,13 +270,13 @@ class Reactor implements SendCommand {
     // Private members
     // class members
     private DatagramSocket socket;        // Socket to communicate with server
-    private InetAddress host;            // Server address
-    private int port;            // server port
-    private String team;            // team name
-    private SensorInput brain;        // input for sensor information
+    private InetAddress host;             // Server address
+    private int port;                     // Server port
+    private String team;                  // team name
+    private SensorInput brain;            // input for sensor information
     private boolean playing;              // controls the MainLoop
-    private Pattern message_pattern = Pattern.compile("^\\((\\w+?)\\s.*");
-    private Pattern hear_pattern = Pattern.compile("^\\(hear\\s(\\w+?)\\s(\\w+?)\\s(.*)\\).*");
+    private Pattern messagePattern = Pattern.compile("^\\((\\w+?)\\s.*");
+    private Pattern hearPattern = Pattern.compile("^\\(hear\\s(\\w+?)\\s(\\w+?)\\s(.*)\\).*");
     //private Pattern coach_pattern = Pattern.compile("coach");
     // constants
     private static final int MSG_SIZE = 4096;    // Size of socket buffer
