@@ -1,9 +1,15 @@
 public class PlayView {
-    private PlayView(){
-        //
+    private Memory memory;
+    private String team;
+    private char side;
+
+    public PlayView(Memory memory, String team, char side){
+        this.memory = memory;
+        this.team = team;
+        this.side = side;
     }
 
-    public static boolean canSeeBall(Memory memory){
+    public boolean canSeeBall(){
         ObjectInfo ball = memory.getObject(Constants.BALL);
         if (ball == null){
             return false;
@@ -12,32 +18,28 @@ public class PlayView {
         }
     }
 
-    public static boolean hasBall(Memory memory){
+    public boolean hasBall(){
         ObjectInfo ball = memory.getObject(Constants.BALL);
-        if (ball.distance > 1){
+        if (ball != null){
+            if (ball.distance > 1){
+                return false;
+            } else {
+                return true;
+            }
+        }
+       return false;
+    }
+
+    public boolean canSeeGoal(){
+        if (SoccerUtil.getCurrentGoal(memory, side) == null){
             return false;
         } else {
             return true;
         }
     }
 
-    public static boolean canSeeGoal(Memory memory, char side){
-        if (getCurrentGoal(memory, side) == null){
-            return false;
-        } else {
-            return true;
-        }
-    }
 
-    public static ObjectInfo getCurrentGoal(Memory memory, char side){
-        if (side == Constants.LEFT){
-            return memory.getObject(Constants.GOAL_RIGHT);
-        } else {
-            return memory.getObject(Constants.GOAL_LEFT);
-        }
-    }
-
-    public static boolean canSeeTeamMate(Memory memory, String team) {
+    public boolean canSeeTeamMate() {
         PlayerInfo player = (PlayerInfo) memory.getObject(Constants.PLAYER);
         if (player != null && player.getTeamName().equals(team)) {
             return true;
@@ -46,7 +48,7 @@ public class PlayView {
         }
     }
 
-    public static boolean teamMateHasBall(Memory memory, String team){
+    public boolean teamMateHasBall(){
         PlayerInfo player = (PlayerInfo) memory.getObject(Constants.PLAYER);
         ObjectInfo ball = memory.getObject(Constants.BALL);
         if (player != null && ball != null && player.getTeamName().equals(team)) {
@@ -59,12 +61,21 @@ public class PlayView {
         return false;
     }
 
-    public static boolean farFromGoal(Memory memory, char side){
-        ObjectInfo goal = getCurrentGoal(memory, side);
-        if ( goal != null && goal.distance >= 28){
+    public boolean farFromGoal(){
+        ObjectInfo goal = SoccerUtil.getCurrentGoal(memory, side);
+        if ( goal != null && goal.distance >= 20){
             return true;
         } else {
             return false;
         }
+    }
+
+    public enum Environments {
+        BALL_NOT_VISIBLE,
+        CAN_SEE_BALL,
+        CAN_SEE_GOAL,
+        CAN_SEE_TEAM_MATE,
+        FAR_FROM_GOAL,
+        HAS_BALL
     }
 }

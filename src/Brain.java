@@ -24,7 +24,8 @@ class Brain extends Thread implements SensorInput {
         this.side = side;
         this.number = number;
         this.playMode = playMode;
-        action = new Action(this.team);
+        action = new Action(this.reactor,this.memory,this.team,this.side);
+        playView = new PlayView(this.memory, this.team, this.side);
         start();
     }
 
@@ -60,14 +61,14 @@ class Brain extends Thread implements SensorInput {
 
         while (!timeOver) {
            getObjects();
-            if (!PlayView.canSeeBall(memory)) {
+            if (!playView.canSeeBall()) {
                 // If you don't know where is ball then find it
-                action.lookAround(reactor, memory);
-            } else if (!PlayView.hasBall(memory) && !PlayView.teamMateHasBall(memory, team)) {
+                action.lookAround();
+            } else if (!playView.hasBall() && !playView.teamMateHasBall()) {
                 // If ball is too far then
                 // turn to ball or
                 // if we have correct direction then go to ball
-                action.dashTowardsBall(reactor, memory);
+                action.dashTowardsBall();
             } else {
                 // We know where is ball and we can kick it
                 // so look for goal
@@ -78,10 +79,11 @@ class Brain extends Thread implements SensorInput {
 //                    Action.kickTowardsGoal(reactor, memory, side);
 //                }
 
-                if (PlayView.farFromGoal(memory, side)){
-                    action.dashTowardsGoal(reactor, memory, side);
+                if (playView.canSeeGoal() && playView.farFromGoal()){
+                    action.dashTowardsGoal();
                 } else {
-                    action.passBall(reactor, memory);
+                    action.passBall();
+
                 }
             }
 
@@ -155,5 +157,6 @@ class Brain extends Thread implements SensorInput {
     private ObjectInfo rightGoal;
     private String team;
     private Action action;
+    private PlayView playView;
 
 }
