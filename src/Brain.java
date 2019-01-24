@@ -13,6 +13,20 @@ import java.util.List;
 import java.util.regex.*;
 
 class Brain extends Thread implements SensorInput {
+
+    //===========================================================================
+    // Private members
+    private SendCommand reactor;          // robot which is controled by this brain
+    private Memory memory;                // place where all information is stored
+    private char side;
+    volatile private boolean timeOver;
+    private String playMode;
+    private int number;
+    private String team;
+    private Action action;
+    private PlayView playView;
+    private List<Behavior> behaviors;
+
     //---------------------------------------------------------------------------
     // This constructor:
     // - stores connection to reactor
@@ -106,20 +120,5 @@ class Brain extends Thread implements SensorInput {
             timeOver = true;
 
     }
-
-
-
-    //===========================================================================
-    // Private members
-    private SendCommand reactor;            // robot which is controled by this brain
-    private Memory memory;                // place where all information is stored
-    private char side;
-    volatile private boolean timeOver;
-    private String playMode;
-    private int number;
-    private String team;
-    private Action action;
-    private PlayView playView;
-    private List<Behavior> behaviors;
 
 }

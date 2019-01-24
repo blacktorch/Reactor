@@ -64,9 +64,9 @@ class Reactor implements SendCommand {
             System.err.println("    team        team_name    Reactors");
             System.err.println("");
             System.err.println("    Example:");
-            System.err.println("      krislet -host www.host.com -port 6000 -team Poland");
+            System.err.println("      Reactor -host www.host.com -port 6000 -team Nigeria");
             System.err.println("    or");
-            System.err.println("      krislet -host 193.117.005.223");
+            System.err.println("      Reactor -host 193.117.005.223");
             return;
         }
 
@@ -291,6 +291,29 @@ class Reactor implements SendCommand {
            return behaviors;
         } catch (IOException e) {
             e.printStackTrace();
+            System.err.println("=================================================     ");
+            System.err.println("     Error Loading Behavior File                      ");
+            System.err.println("     --------------------------------------------     ");
+            System.err.println("     Behavior file not found                          ");
+            /**-----------------------------------------------------------------------**/
+            System.out.println("=================================================     ");
+            System.out.println("     Error Loading Behavior File                      ");
+            System.out.println("     --------------------------------------------     ");
+            System.out.println("     Behavior file not found                          ");
+        } catch (Exception ex){
+            /**-----------------------------------------------------------------------**/
+            System.out.println("=================================================     ");
+            System.out.println("     Error Loading Behavior File                      ");
+            System.out.println("     --------------------------------------------     ");
+            System.out.println("     Behavior file not found or formatted wrongly     ");
+            System.out.println("     Find below how to format it properly             ");
+            System.out.println("     Example:                                         ");
+            System.out.println("     ENVIRONMENT_1,ENVIRONMENT_2:ACTION               ");
+            System.out.println("     You could also load a single Environment per behavior");
+            System.out.println("     Example:                                         ");
+            System.out.println("     ENVIRONMENT_1:ACTION                             ");
+            System.out.println("     Note:                                            ");
+            System.out.println("     You can only MAP a SINGLE ACTION to a set of ENVIRONMENTS");
         }
 
         return null;

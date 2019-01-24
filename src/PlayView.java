@@ -53,11 +53,9 @@ public class PlayView {
         ObjectInfo ball = memory.getObject(Constants.BALL);
         if (player != null && ball != null && player.getTeamName().equals(team)) {
             if ((player.distance - ball.distance) >= -5 && (player.distance - ball.distance) <= 5){
-                System.out.println("true");
                 return true;
             }
         }
-        System.out.println("false");
         return false;
     }
 
