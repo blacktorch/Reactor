@@ -52,6 +52,9 @@ public class Behavior {
                 case CAN_SEE_TEAM_MATE:
                     environs[i] = playView.canSeeTeamMate();
                     break;
+                case TEAM_MATE_HAS_BALL:
+                    environs[i] = playView.teamMateHasBall();
+                    break;
             }
             i++;
         }
@@ -76,6 +79,8 @@ public class Behavior {
                 break;
             case KICK_TOWARDS_GOAL:
                 todo.kickTowardsGoal();
+                break;
+            case DO_NOTHING:
                 break;
         }
 

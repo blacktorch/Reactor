@@ -182,7 +182,8 @@ class Reactor implements SendCommand {
                 team,
                 m.group(1).charAt(0),
                 Integer.parseInt(m.group(2)),
-                m.group(3));
+                m.group(3),
+                loadBehaviors());
     }
 
 
@@ -263,6 +264,36 @@ class Reactor implements SendCommand {
             System.err.println("socket receiving error " + e);
         }
         return new String(buffer);
+    }
+
+    private List<Behavior> loadBehaviors(){
+        List<Behavior> behaviors = new ArrayList<>();
+        try {
+           String root = SoccerUtil.toString(Reactor.class.getResourceAsStream(File.separator + "Behavior"+ File.separator + "behavior.txt"));
+           String[] behaviorArray = root.split("\n");
+           for (String behavior : behaviorArray){
+               List<PlayView.Environments> environmentsList = new ArrayList<>();
+               Action.Actions action;
+               String[] EandA = behavior.split(":");
+               if (EandA[0].contains(",")){
+                   String[] environments = EandA[0].split(",");
+                   for (String environment : environments){
+                       environmentsList.add(PlayView.Environments.valueOf(environment));
+                   }
+               } else {
+                   environmentsList.add(PlayView.Environments.valueOf(EandA[0]));
+               }
+               action = Action.Actions.valueOf(EandA[1]);
+
+               behaviors.add(new Behavior(environmentsList, action));
+           }
+
+           return behaviors;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 

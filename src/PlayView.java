@@ -76,6 +76,7 @@ public class PlayView {
         CAN_SEE_GOAL,
         CAN_SEE_TEAM_MATE,
         FAR_FROM_GOAL,
-        HAS_BALL
+        HAS_BALL,
+        TEAM_MATE_HAS_BALL
     }
 }

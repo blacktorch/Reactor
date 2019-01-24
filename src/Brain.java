@@ -9,6 +9,7 @@
 //    Date:             March 4, 2008
 
 import java.lang.Math;
+import java.util.List;
 import java.util.regex.*;
 
 class Brain extends Thread implements SensorInput {
@@ -16,7 +17,7 @@ class Brain extends Thread implements SensorInput {
     // This constructor:
     // - stores connection to reactor
     // - starts thread for this object
-    public Brain(SendCommand reactor, String team, char side, int number, String playMode) {
+    public Brain(SendCommand reactor, String team, char side, int number, String playMode, List<Behavior> behaviors) {
         timeOver = false;
         this.reactor = reactor;
         memory = new Memory();
@@ -26,6 +27,7 @@ class Brain extends Thread implements SensorInput {
         this.playMode = playMode;
         action = new Action(this.reactor,this.memory,this.team,this.side);
         playView = new PlayView(this.memory, this.team, this.side);
+        this.behaviors = behaviors;
         start();
     }
 
@@ -60,30 +62,10 @@ class Brain extends Thread implements SensorInput {
             reactor.move(-Math.random() * 52.5, 34 - Math.random() * 68.0);
 
         while (!timeOver) {
-           getObjects();
-            if (!playView.canSeeBall()) {
-                // If you don't know where is ball then find it
-                action.lookAround();
-            } else if (!playView.hasBall() && !playView.teamMateHasBall()) {
-                // If ball is too far then
-                // turn to ball or
-                // if we have correct direction then go to ball
-                action.dashTowardsBall();
-            } else {
-                // We know where is ball and we can kick it
-                // so look for goal
 
-//                if (!PlayView.canSeeGoal(memory, side)) {
-//                    Action.lookAround(reactor, memory);
-//                } else {
-//                    Action.kickTowardsGoal(reactor, memory, side);
-//                }
-
-                if (playView.canSeeGoal() && playView.farFromGoal()){
-                    action.dashTowardsGoal();
-                } else {
-                    action.passBall();
-
+            for (Behavior behavior : behaviors){
+                if (behavior.isInCurrentEnvironment(memory, team, side)){
+                    behavior.performAction(action);
                 }
             }
 
@@ -125,22 +107,6 @@ class Brain extends Thread implements SensorInput {
 
     }
 
-    public void getObjects(){
-        ball = memory.getObject(Constants.BALL);
-        player = memory.getObject(Constants.PLAYER);
-        leftGoal = memory.getObject(Constants.GOAL_LEFT);
-        rightGoal = memory.getObject(Constants.GOAL_RIGHT);
-    }
-
-    private ObjectInfo getCurrentGoal(){
-        if (side == Constants.LEFT){
-            rightGoal = memory.getObject(Constants.GOAL_RIGHT);
-            return rightGoal;
-        } else {
-            leftGoal = memory.getObject(Constants.GOAL_LEFT);
-            return leftGoal;
-        }
-    }
 
 
     //===========================================================================
@@ -151,12 +117,9 @@ class Brain extends Thread implements SensorInput {
     volatile private boolean timeOver;
     private String playMode;
     private int number;
-    private ObjectInfo ball;
-    private ObjectInfo player;
-    private ObjectInfo leftGoal;
-    private ObjectInfo rightGoal;
     private String team;
     private Action action;
     private PlayView playView;
+    private List<Behavior> behaviors;
 
 }

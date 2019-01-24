@@ -69,7 +69,8 @@ public class Action {
         DASH_TOWARDS_GOAL,
         KICK_TOWARDS_GOAL,
         LOOK_AROUND,
-        PASS_BALL
+        PASS_BALL,
+        DO_NOTHING
     }
 
 }
