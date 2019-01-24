@@ -14,20 +14,17 @@ import java.util.regex.*;
 class Brain extends Thread implements SensorInput {
     //---------------------------------------------------------------------------
     // This constructor:
-    // - stores connection to krislet
+    // - stores connection to reactor
     // - starts thread for this object
-    public Brain(SendCommand krislet,
-                 String team,
-                 char side,
-                 int number,
-                 String playMode) {
-        m_timeOver = false;
-        m_krislet = krislet;
-        m_memory = new Memory();
-        //m_team = team;
-        m_side = side;
-        // m_number = number;
-        m_playMode = playMode;
+    public Brain(SendCommand reactor, String team, char side, int number, String playMode) {
+        timeOver = false;
+        this.reactor = reactor;
+        memory = new Memory();
+        this.team = team;
+        this.side = side;
+        this.number = number;
+        this.playMode = playMode;
+        action = new Action(this.team);
         start();
     }
 
@@ -57,42 +54,35 @@ class Brain extends Thread implements SensorInput {
     // ************************************************
 
     public void run() {
-        ObjectInfo object;
-
         // first put it somewhere on my side
-        if (Pattern.matches("^before_kick_off.*", m_playMode))
-            m_krislet.move(-Math.random() * 52.5, 34 - Math.random() * 68.0);
+        if (Pattern.matches("^before_kick_off.*", playMode))
+            reactor.move(-Math.random() * 52.5, 34 - Math.random() * 68.0);
 
-        while (!m_timeOver) {
-            object = m_memory.getObject("ball");
-            if (object == null) {
+        while (!timeOver) {
+           getObjects();
+            if (!PlayView.canSeeBall(memory)) {
                 // If you don't know where is ball then find it
-                m_krislet.turn(40);
-                m_memory.waitForNewInfo();
-            } else if (object.m_distance > 1.0) {
+                action.lookAround(reactor, memory);
+            } else if (!PlayView.hasBall(memory) && !PlayView.teamMateHasBall(memory, team)) {
                 // If ball is too far then
                 // turn to ball or
                 // if we have correct direction then go to ball
-                if (object.m_direction != 0) {
-                    System.out.println("Ball Direction : " + object.m_direction);
-                    System.out.println("Ball Distance : " + object.m_distance);
-                    m_krislet.turn(object.m_direction);
-                } else {
-                    m_krislet.dash(10 * object.m_distance);
-                }
+                action.dashTowardsBall(reactor, memory);
             } else {
                 // We know where is ball and we can kick it
                 // so look for goal
-                if (m_side == 'l')
-                    object = m_memory.getObject("goal r");
-                else
-                    object = m_memory.getObject("goal l");
 
-                if (object == null) {
-                    m_krislet.turn(40);
-                    m_memory.waitForNewInfo();
-                } else
-                    m_krislet.kick(100, object.m_direction);
+//                if (!PlayView.canSeeGoal(memory, side)) {
+//                    Action.lookAround(reactor, memory);
+//                } else {
+//                    Action.kickTowardsGoal(reactor, memory, side);
+//                }
+
+                if (PlayView.farFromGoal(memory, side)){
+                    action.dashTowardsGoal(reactor, memory, side);
+                } else {
+                    action.passBall(reactor, memory);
+                }
             }
 
             // sleep one step to ensure that we will not send
@@ -102,7 +92,7 @@ class Brain extends Thread implements SensorInput {
             } catch (Exception e) {
             }
         }
-        m_krislet.bye();
+        reactor.bye();
     }
 
 
@@ -116,7 +106,7 @@ class Brain extends Thread implements SensorInput {
     //---------------------------------------------------------------------------
     // This function sends see information
     public void see(VisualInfo info) {
-        m_memory.store(info);
+        memory.store(info);
     }
 
 
@@ -129,17 +119,41 @@ class Brain extends Thread implements SensorInput {
     // This function receives hear information from referee
     public void hear(int time, String message) {
         if (message.compareTo("time_over") == 0)
-            m_timeOver = true;
+            timeOver = true;
 
+    }
+
+    public void getObjects(){
+        ball = memory.getObject(Constants.BALL);
+        player = memory.getObject(Constants.PLAYER);
+        leftGoal = memory.getObject(Constants.GOAL_LEFT);
+        rightGoal = memory.getObject(Constants.GOAL_RIGHT);
+    }
+
+    private ObjectInfo getCurrentGoal(){
+        if (side == Constants.LEFT){
+            rightGoal = memory.getObject(Constants.GOAL_RIGHT);
+            return rightGoal;
+        } else {
+            leftGoal = memory.getObject(Constants.GOAL_LEFT);
+            return leftGoal;
+        }
     }
 
 
     //===========================================================================
     // Private members
-    private SendCommand m_krislet;            // robot which is controled by this brain
-    private Memory m_memory;                // place where all information is stored
-    private char m_side;
-    volatile private boolean m_timeOver;
-    private String m_playMode;
+    private SendCommand reactor;            // robot which is controled by this brain
+    private Memory memory;                // place where all information is stored
+    private char side;
+    volatile private boolean timeOver;
+    private String playMode;
+    private int number;
+    private ObjectInfo ball;
+    private ObjectInfo player;
+    private ObjectInfo leftGoal;
+    private ObjectInfo rightGoal;
+    private String team;
+    private Action action;
 
 }

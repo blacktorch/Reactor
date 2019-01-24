@@ -19,42 +19,42 @@
 
 class ObjectInfo
 {
-  public String m_type;
-  public float m_distance;
-  public float m_direction;
-  public float m_distChange;
-  public float m_dirChange;
+  public String type;
+  public float distance;
+  public float direction;
+  public float distChange;
+  public float dirChange;
 
   //===========================================================================
   // Initialization member functions
   public ObjectInfo(String type)
   {
-    m_type = type;
+    this.type = type;
   }
 
   public float getDistance()
   {
-    return m_distance;
+    return distance;
   }
 
   public float getDirection()
   {
-    return m_direction;
+    return direction;
   }
 
   public float getDistChange()
   {
-    return m_distChange;
+    return distChange;
   }
 
   public float getDirChange()
   {
-    return m_dirChange;
+    return dirChange;
   }
 
   public String getType()
   {
-    return m_type;
+    return type;
   }
 }
 
@@ -66,11 +66,11 @@ class ObjectInfo
 //***************************************************************************
 class PlayerInfo extends ObjectInfo
 {
-  String  m_teamName = "";
-  int m_uniformName = 0;        // recognise 0 as not being able to see number
-  float m_bodyDir;
-  float m_headDir;
-  boolean m_goalie = false;
+  private String teamName = "";
+  private int uniformName = 0;        // recognise 0 as not being able to see number
+  float bodyDir;
+  float headDir;
+  private boolean goalie = false;
 
   //===========================================================================
   // Initialization member functions
@@ -82,40 +82,40 @@ class PlayerInfo extends ObjectInfo
   public PlayerInfo(String team, int number, boolean is_goalie)
   {
     super("player");
-    m_teamName = team;
-    m_uniformName = number;
-    m_goalie = is_goalie;
-    m_bodyDir = 0;
-    m_headDir = 0;
+    teamName = team;
+    uniformName = number;
+    goalie = is_goalie;
+    bodyDir = 0;
+    headDir = 0;
   }
 
   public PlayerInfo(String team, int number, float bodyDir, float headDir)
   {
     super("player");
-    m_teamName = team;
-    m_uniformName = number;
-    m_bodyDir = bodyDir;
-    m_headDir = headDir;
+    teamName = team;
+    uniformName = number;
+    this.bodyDir = bodyDir;
+    this.headDir = headDir;
   }
 
   public String getTeamName()
   {
-    return m_teamName;
+    return teamName;
   }
 
   public void setGoalie(boolean goalie)
   {
-    m_goalie = goalie;
+    this.goalie = goalie;
   }
 
   public boolean isGoalie()
   {
-    return m_goalie;
+    return goalie;
   }
 
   public int getTeamNumber()
   {
-    return m_uniformName;
+    return uniformName;
   }
 }
 
@@ -127,24 +127,24 @@ class PlayerInfo extends ObjectInfo
 //***************************************************************************
 class GoalInfo extends ObjectInfo
 {
-  private char m_side;
+  private char side;
   //===========================================================================
   // Initialization member functions
   public GoalInfo()
   {
     super("goal");
-    m_side = ' ';
+    side = ' ';
   }
 
   public GoalInfo(char side)
   {
     super("goal " + side);
-    m_side = side;
+    this.side = side;
   }
 
   public char getSide()
   {
-    return m_side;
+    return side;
   }
 }
 
@@ -160,7 +160,7 @@ class BallInfo extends ObjectInfo
   // Initialization member functions
   public BallInfo()
   {
-    super("ball");
+    super(Constants.BALL);
   }
 }
 
@@ -182,7 +182,7 @@ class FlagInfo extends ObjectInfo
   // Initialization member functions
   public FlagInfo()
   {
-    super("flag");
+    super(Constants.FLAG);
     m_type = ' ';
     m_pos1 = ' ';
     m_pos2 = ' ';
@@ -203,7 +203,7 @@ class FlagInfo extends ObjectInfo
 
   public FlagInfo(char type, char pos1, char pos2, int num, boolean out)
   {
-    super("flag");
+    super(Constants.FLAG);
     m_type = type;
     m_pos1 = pos1;
     m_pos2 = pos2;
@@ -226,12 +226,12 @@ class LineInfo extends ObjectInfo
   // Initialization member functions
   public LineInfo()
   {
-    super("line");
+    super(Constants.LINE);
   }
 
   public LineInfo(char kind)
   {
-    super("line");
+    super(Constants.LINE);
     m_kind = kind;
   }
 }

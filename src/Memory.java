@@ -26,7 +26,7 @@ class Memory {
 
         for (int c = 0; c < m_info.m_objects.size(); c++) {
             ObjectInfo object = (ObjectInfo) m_info.m_objects.elementAt(c);
-            if (object.m_type.compareTo(name) == 0)
+            if (object.type.compareTo(name) == 0)
                 return object;
         }
 

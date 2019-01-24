@@ -111,19 +111,19 @@ class VisualInfo {
             int len = relPos.length;
             switch (len) {
                 case 6:
-                    ((PlayerInfo) (objInfo)).m_headDir = Float.valueOf(relPos[5]).floatValue();
+                    ((PlayerInfo) (objInfo)).headDir = Float.valueOf(relPos[5]).floatValue();
                 case 5:
-                    ((PlayerInfo) (objInfo)).m_bodyDir = Float.valueOf(relPos[4]).floatValue();
+                    ((PlayerInfo) (objInfo)).bodyDir = Float.valueOf(relPos[4]).floatValue();
                 case 4:
-                    objInfo.m_dirChange = Float.valueOf(relPos[3]).floatValue();
+                    objInfo.dirChange = Float.valueOf(relPos[3]).floatValue();
                 case 3:
-                    objInfo.m_distChange = Float.valueOf(relPos[2]).floatValue();
+                    objInfo.distChange = Float.valueOf(relPos[2]).floatValue();
                 case 2:
-                    objInfo.m_distance = Float.valueOf(relPos[0]).floatValue();
-                    objInfo.m_direction = Float.valueOf(relPos[1]).floatValue();
+                    objInfo.distance = Float.valueOf(relPos[0]).floatValue();
+                    objInfo.direction = Float.valueOf(relPos[1]).floatValue();
                     break;
                 default:
-                    objInfo.m_direction = Float.valueOf(relPos[0]).floatValue();
+                    objInfo.direction = Float.valueOf(relPos[0]).floatValue();
                     break;
             }
         }
