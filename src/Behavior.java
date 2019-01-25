@@ -54,6 +54,9 @@ public class Behavior {
                 case TEAM_MATE_HAS_BALL:
                     environs[i] = playView.teamMateHasBall();
                     break;
+                case FACING_MY_GOAL:
+                    environs[i] = playView.facingMyGoal();
+                    break;
             }
             i++;
         }

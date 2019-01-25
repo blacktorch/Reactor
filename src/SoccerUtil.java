@@ -5,11 +5,19 @@ public class SoccerUtil {
         //do not initialize...
     }
 
-    public static ObjectInfo getCurrentGoal(Memory memory, char side) {
+    public static ObjectInfo getOpponentsGoal(Memory memory, char side) {
         if (side == Constants.LEFT) {
             return memory.getObject(Constants.GOAL_RIGHT);
         } else {
             return memory.getObject(Constants.GOAL_LEFT);
+        }
+    }
+
+    public static ObjectInfo getMyGoal(Memory memory, char side) {
+        if (side == Constants.LEFT) {
+            return memory.getObject(Constants.GOAL_LEFT);
+        } else {
+            return memory.getObject(Constants.GOAL_RIGHT);
         }
     }
 

@@ -31,7 +31,7 @@ public class Action {
     }
 
     public void kickTowardsGoal() {
-        actor.kick(100, SoccerUtil.getCurrentGoal(memory, side).direction);
+        actor.kick(100, SoccerUtil.getOpponentsGoal(memory, side).direction);
     }
 
     public void passBall() {
@@ -50,7 +50,7 @@ public class Action {
     }
 
     public void dashTowardsGoal(){
-        ObjectInfo goal = SoccerUtil.getCurrentGoal(memory, side);
+        ObjectInfo goal = SoccerUtil.getOpponentsGoal(memory, side);
         ObjectInfo ball = memory.getObject(Constants.BALL);
         if (goal.direction != 0){
             actor.turn(goal.direction);

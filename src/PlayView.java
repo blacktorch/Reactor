@@ -31,7 +31,7 @@ public class PlayView {
     }
 
     public boolean canSeeGoal(){
-        if (SoccerUtil.getCurrentGoal(memory, side) == null){
+        if (SoccerUtil.getOpponentsGoal(memory, side) == null){
             return false;
         } else {
             return true;
@@ -52,7 +52,7 @@ public class PlayView {
         PlayerInfo player = (PlayerInfo) memory.getObject(Constants.PLAYER);
         ObjectInfo ball = memory.getObject(Constants.BALL);
         if (player != null && ball != null && player.getTeamName().equals(team)) {
-            if ((player.distance - ball.distance) >= -5 && (player.distance - ball.distance) <= 5){
+            if ((player.distance - ball.distance) >= -4 && (player.distance - ball.distance) <= 4){
                 return true;
             }
         }
@@ -60,8 +60,17 @@ public class PlayView {
     }
 
     public boolean farFromGoal(){
-        ObjectInfo goal = SoccerUtil.getCurrentGoal(memory, side);
+        ObjectInfo goal = SoccerUtil.getOpponentsGoal(memory, side);
         if ( goal != null && goal.distance >= 20){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean facingMyGoal(){
+        ObjectInfo myGoal = SoccerUtil.getMyGoal(memory, side);
+        if (myGoal != null){
             return true;
         } else {
             return false;
@@ -75,6 +84,7 @@ public class PlayView {
         CAN_SEE_TEAM_MATE,
         FAR_FROM_GOAL,
         HAS_BALL,
-        TEAM_MATE_HAS_BALL
+        TEAM_MATE_HAS_BALL,
+        FACING_MY_GOAL
     }
 }

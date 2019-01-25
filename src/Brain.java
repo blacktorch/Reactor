@@ -24,7 +24,6 @@ class Brain extends Thread implements SensorInput {
     private int number;
     private String team;
     private Action action;
-    private PlayView playView;
     private List<Behavior> behaviors;
 
     //---------------------------------------------------------------------------
@@ -40,35 +39,10 @@ class Brain extends Thread implements SensorInput {
         this.number = number;
         this.playMode = playMode;
         action = new Action(this.reactor,this.memory,this.team,this.side);
-        playView = new PlayView(this.memory, this.team, this.side);
         this.behaviors = behaviors;
         start();
     }
 
-
-    //---------------------------------------------------------------------------
-    // This is main brain function used to make decision
-    // In each cycle we decide which command to issue based on
-    // current situation. the rules are:
-    //
-    //	1. If you don't know where is ball then turn right and wait for new info
-    //
-    //	2. If ball is too far to kick it then
-    //		2.1. If we are directed towards the ball then go to the ball
-    //		2.2. else turn to the ball
-    //
-    //	3. If we dont know where is opponent goal then turn wait 
-    //				and wait for new info
-    //
-    //	4. Kick ball
-    //
-    //	To ensure that we don't send commands to often after each cycle
-    //	we waits one simulator steps. (This of course should be done better)
-
-    // ***************  Improvements ******************
-    // Allways know where the goal is.
-    // Move to a place on my side on a kick_off
-    // ************************************************
 
     public void run() {
         // first put it somewhere on my side
