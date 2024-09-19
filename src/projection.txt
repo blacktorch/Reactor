@@ -1,0 +1,290 @@
+        private const double dec = 90.0;
+        // Adjust the polar elevation angle (e.g., 30 degrees)
+        private double polarElevation = (0 - dec) * Math.PI / 180.0;//Math.PI / 4;  // 30 degrees
+        
+        private void DrawClippingCircle()
+        {
+            const int radius = 450; // Radius of the clipping circle
+
+            // Create a circular clip
+            EllipseGeometry clipGeometry = new EllipseGeometry(new Point(MainCanvas.Width / 2, MainCanvas.Height / 2), radius, radius);
+            MainCanvas.Clip = clipGeometry; // Apply the clip to the canvas
+        }
+
+        private void DrawStereographicProjection()
+        {
+            const int radius = 450; // Radius of the projection plane
+            const int gridDensity = 18; // Density of grid lines for latitude and longitude
+            const double sphereRadius = 1.0; // Unit sphere radius
+            const double step = Math.PI / gridDensity;
+
+            // Draw Latitude Lines as arcs
+            DrawLatitudeArcs(radius, sphereRadius, step);
+
+            // Draw Longitude Lines as arcs
+            DrawLongitudeArcs(radius, sphereRadius, step);
+        }
+
+        private void DrawLatitudeArcs(int radius, double sphereRadius, double step)
+        {
+            for (double theta = -Math.PI / 2; theta <= Math.PI / 2; theta += step)
+            {
+                PathFigure pathFigure = new PathFigure();
+                bool firstPoint = true;
+
+                for (double phi = 0; phi <= 2 * Math.PI; phi += step)
+                {
+                    double x = sphereRadius * Math.Cos(theta) * Math.Cos(phi);
+                    double y = sphereRadius * Math.Cos(theta) * Math.Sin(phi);
+                    double z = sphereRadius * Math.Sin(theta);
+
+                    double rotatedY = y * Math.Cos(polarElevation) - z * Math.Sin(polarElevation);
+                    double rotatedZ = y * Math.Sin(polarElevation) + z * Math.Cos(polarElevation);
+
+                    // Perform stereographic projection
+                    double projectedX = x / (1 - rotatedZ);
+                    double projectedY = rotatedY / (1 - rotatedZ); // Negate Y to flip the projection
+
+                    // Ensure projectedX and projectedY are finite and not too large
+                    projectedX = Clamp(projectedX, -radius, radius);
+                    projectedY = Clamp(projectedY, -radius, radius);
+
+                    double screenX = projectedX * radius + MainCanvas.Width / 2;
+                    double screenY = projectedY * radius + MainCanvas.Height / 2;
+
+                    if (firstPoint)
+                    {
+                        pathFigure.StartPoint = new Point(screenX, screenY);
+                        firstPoint = false;
+                    }
+                    else
+                    {
+                        pathFigure.Segments.Add(new LineSegment(new Point(screenX, screenY), true));
+                    }
+                }
+
+                PathGeometry pathGeometry = new PathGeometry();
+                pathGeometry.Figures.Add(pathFigure);
+
+                Path path = new Path
+                {
+                    Stroke = Brushes.Black,
+                    StrokeThickness = 1,
+                    Data = pathGeometry
+                };
+
+                MainCanvas.Children.Add(path);
+            }
+        }
+
+        private void DrawLongitudeArcs(int radius, double sphereRadius, double step)
+        {
+            for (double phi = 0; phi <= 2 * Math.PI; phi += step)
+            {
+                PathFigure pathFigure = new PathFigure();
+                bool firstPoint = true;
+
+                for (double theta = -Math.PI / 2; theta <= Math.PI / 2; theta += step)
+                {
+                    double x = sphereRadius * Math.Cos(theta) * Math.Cos(phi);
+                    double y = sphereRadius * Math.Cos(theta) * Math.Sin(phi);
+                    double z = sphereRadius * Math.Sin(theta);
+
+                    double rotatedY = y * Math.Cos(polarElevation) - z * Math.Sin(polarElevation);
+                    double rotatedZ = y * Math.Sin(polarElevation) + z * Math.Cos(polarElevation);
+
+                    // Perform stereographic projection
+                    double projectedX = x / (1 - rotatedZ);
+                    double projectedY = rotatedY / (1 - rotatedZ); // Negate Y to flip the projection
+
+                    // Ensure projectedX and projectedY are finite and not too large
+                    projectedX = Clamp(projectedX, -radius, radius);
+                    projectedY = Clamp(projectedY, -radius, radius);
+
+                    double screenX = projectedX * radius + MainCanvas.Width / 2;
+                    double screenY = projectedY * radius + MainCanvas.Height / 2;
+
+                    if (firstPoint)
+                    {
+                        pathFigure.StartPoint = new Point(screenX, screenY);
+                        firstPoint = false;
+                    }
+                    else
+                    {
+                        pathFigure.Segments.Add(new LineSegment(new Point(screenX, screenY), true));
+                    }
+                }
+
+                PathGeometry pathGeometry = new PathGeometry();
+                pathGeometry.Figures.Add(pathFigure);
+
+                Path path = new Path
+                {
+                    Stroke = Brushes.Black,
+                    StrokeThickness = 1,
+                    Data = pathGeometry
+                };
+
+                MainCanvas.Children.Add(path);
+            }
+        }
+
+        private void DrawSkyGrid()
+        {
+            double centerX = MainCanvas.Width / 2;
+            double centerY = MainCanvas.Height / 2;
+            double radius = 450;  // Maximum radius of the outer circle
+            int numCircles = 9;  // Number of concentric circles
+            int numRadials = 12;  // Number of radial lines
+            double scaler = 0.032;
+            double bcs = 0.71; //bigger circle scaler
+            double currentRadiusScale = 0.80;
+            //
+            // Draw concentric circles
+            for (int i = 1; i <= numCircles; i++)
+            {
+                if(i > 3)
+                {
+                    currentRadiusScale = ValueMap(i, 1, numCircles, bcs, 1.0);
+                    bcs -= scaler;
+                }
+                double currentRadius = radius * i *  currentRadiusScale / numCircles;
+                Ellipse circle = new Ellipse
+                {
+                    Stroke = Brushes.Blue,
+                    StrokeThickness = 1,
+                    Width = currentRadius * 2,
+                    Height = currentRadius * 2
+                };
+
+                // Position the circle at the center
+                Canvas.SetLeft(circle, centerX - currentRadius);
+                Canvas.SetTop(circle, centerY - currentRadius);
+                MainCanvas.Children.Add(circle);
+                
+            }
+
+            // Draw radial lines
+            for (int i = 0; i < numRadials; i++)
+            {
+                double angle = i * 2 * Math.PI / numRadials;
+                double x = centerX + radius * Math.Cos(angle);
+                double y = centerY + radius * Math.Sin(angle);
+
+                Line radialLine = new Line
+                {
+                    Stroke = i == 9 ? Brushes.Orange : Brushes.Gray,  // Highlight the vertical (north) line
+                    StrokeThickness = 1,
+                    X1 = centerX,
+                    Y1 = centerY,
+                    X2 = x,
+                    Y2 = y
+                };
+
+                MainCanvas.Children.Add(radialLine);
+            }
+
+            // Draw the horizon (ellipse)
+            double horizonWidth = radius * 2;
+            double horizonHeight = radius;
+            Ellipse horizon = new Ellipse
+            {
+                Stroke = Brushes.White,
+                StrokeThickness = 2,
+                Width = horizonWidth,
+                Height = horizonHeight
+            };
+
+            // Position the horizon ellipse
+            Canvas.SetLeft(horizon, centerX - radius);
+            Canvas.SetTop(horizon, centerY);
+            MainCanvas.Children.Add(horizon);
+        }
+
+        // Method to set the polar elevation (in degrees) and update the projection
+        public void SetPolarElevation(double degrees)
+        {
+            // Convert degrees to radians and update the polar elevation
+            polarElevation = (degrees - 90) * Math.PI / 180.0;
+            MainCanvas.Children.Clear(); // Clear previous drawings
+            DrawClippingCircle(); // Redraw clipping circle
+            DrawStereographicProjection(); // Redraw projection with the new elevation
+        }
+
+        // Method to place an object based on elevation and azimuth
+        public void PlaceObject(double elevationDegrees, double azimuthDegrees, double radius = 450)
+        {
+            // Convert angles to radians
+            double elevation = elevationDegrees * Math.PI / 180.0;
+            double azimuth = azimuthDegrees * Math.PI / 180.0;
+
+            // Calculate 3D Cartesian coordinates for the point
+            double sphereRadius = 0.71; // Assuming a unit sphere
+            double x = sphereRadius * Math.Cos(elevation) * Math.Cos(azimuth);
+            double y = sphereRadius * Math.Cos(elevation) * Math.Sin(azimuth);
+            double z = sphereRadius * Math.Sin(elevation);
+
+            // Apply the polar elevation (rotation about the x-axis)
+            double rotatedY = y * Math.Cos(polarElevation) - z * Math.Sin(polarElevation);
+            double rotatedZ = y * Math.Sin(polarElevation) + z * Math.Cos(polarElevation);
+
+            // Perform stereographic projection
+            double projectedX = x / (1 - rotatedZ);
+            double projectedY = rotatedY / (1 - rotatedZ); // Negate Y to flip the projection
+
+            // Scale and translate the projected point to fit within the window
+            double screenX = projectedX * radius + MainCanvas.Width / 2;
+            double screenY = projectedY * radius + MainCanvas.Height / 2;
+
+            // Draw the object (e.g., a red ellipse) at the calculated position
+            DrawObjectAt(screenX, screenY);
+        }
+
+        // Helper method to draw the object (an ellipse in this case)
+        private void DrawObjectAt(double x, double y)
+        {
+            Ellipse obj = new Ellipse
+            {
+                Width = 10,
+                Height = 10,
+                Fill = Brushes.Red
+            };
+
+            Canvas.SetLeft(obj, x - obj.Width / 2);
+            Canvas.SetTop(obj, y - obj.Height / 2);
+
+            MainCanvas.Children.Add(obj);
+        }
+
+        private double Clamp(double value, double min, double max)
+        {
+            return Math.Max(min, Math.Min(value, max));
+        }
+
+        private double ValueMap(double value, double valueMin, double valueMax, double desiredMin, double desiredMax) 
+        {
+            return ((value - valueMin) * ((desiredMax - desiredMin) / (valueMax - valueMin)) + desiredMin);
+        }
+
+        // Method to place an object based on Azimuth and Altitude
+public void PlaceObjectByAzimuthAltitude(double azimuthDegrees, double altitudeDegrees, double radius = 450)
+{
+    // Convert Azimuth to radians (for use with trigonometric functions)
+    double azimuth = -azimuthDegrees * Math.PI / 180.0;
+
+    // Convert Altitude to a radial distance from the center of the circle
+    // Altitude increases from 0 to 90 at the center, so the radial distance is proportional
+    double radialDistance = radius * (1 - altitudeDegrees / 90.0);  // 0 altitude at edge, 90 at center
+
+    // Compute the 2D coordinates based on the azimuth and radial distance
+    double x = radialDistance * Math.Sin(azimuth); // Azimuth defines the angular direction (x, y)
+    double y = -radialDistance * Math.Cos(azimuth); // Negative since we want y to increase downwards
+
+    // Translate the coordinates to be relative to the center of the circle
+    double screenX = x + Width / 2;
+    double screenY = y + Height / 2;
+
+    // Draw the object (e.g., a red ellipse) at the calculated screen position
+    DrawObjectAt(screenX, screenY);
+}
+
